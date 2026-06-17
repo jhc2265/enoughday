@@ -6,7 +6,7 @@
 
 🔗 **데모**
 - GitHub Pages: https://jhc2265.github.io/enoughday/
-- 깃허브 페이지는 로그인 없이 이용가능합니다! 그냥 구글로 로그인 버튼을 눌러주세요.
+- 깃허브 페이지는 로그인 없이 이용가능합니다! 그냥 구글로 계속하기 버튼을 눌러주세요.
 - Firebase Hosting: https://enoughday2265.web.app
 
 ---
