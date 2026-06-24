@@ -4,6 +4,11 @@
     "ignore": [
       "firebase.json",
       "**/.*",
+      ".git/**",
+      ".github/**",
+      ".claude/**",
+      ".firebaserc",
+      ".gitignore",
       "**/node_modules/**",
       "*.md",
       "ChatGPT*.png",
