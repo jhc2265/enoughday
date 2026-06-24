@@ -2156,14 +2156,19 @@ $("#deleteAccountBtn").addEventListener("click",()=>{
   askConfirm({
     emoji:"⚠️",
     title:"정말 회원 탈퇴할까요?",
-    sub:"계정과 클라우드에 저장된 모든 할 일·기록이 영구 삭제돼요. 되돌릴 수 없어요.",
+    sub:"계정과 클라우드·이 기기에 저장된 모든 할 일·기록이 영구 삭제돼요. 되돌릴 수 없어요.",
     okLabel:"탈퇴하기",
     cancelLabel:"취소",
     onOk:()=>{
       if(!(window.__fb && window.__fb.deleteAccount)){ toast("정식 사이트에서만 탈퇴할 수 있어요 ☁️"); return; }
       toast("본인 확인 후 탈퇴를 진행해요…");
       window.__fb.deleteAccount()
-        .then(()=>toast("회원 탈퇴가 완료됐어요. 그동안 고마웠어요 ☁️"))
+        .then(()=>{
+          try{ localStorage.removeItem(LS_KEY); localStorage.removeItem(OLD_KEY); }catch(_){}
+          window.__onSave=null;  // 새로고침 전 자동 재저장 방지
+          toast("회원 탈퇴가 완료됐어요. 모든 데이터를 지웠어요 ☁️");
+          setTimeout(()=>location.reload(), 1300);
+        })
         .catch(e=>{
           const c=(e&&e.code)||"";
           if(c.includes("popup-closed")||c.includes("cancelled-popup")||c.includes("user-cancelled")) toast("탈퇴를 취소했어요");
