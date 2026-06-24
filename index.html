@@ -57,8 +57,11 @@ body{
 
 /* topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.mascot{font-size:34px;line-height:1;display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;margin-top:6px;overflow:visible;transition:transform .25s;}
-.mascot.bounce{animation:mascotPop .5s ease;}
+.mascot{position:relative;display:inline-flex;align-items:center;width:auto;height:auto;margin-top:6px;padding-left:44px;font-size:0;overflow:visible;transition:transform .25s;}
+.mascot::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);transform-origin:center;width:36px;height:36px;background:url("assets/img01.png") center/contain no-repeat;}
+.mascot::after{content:"enoughday";display:inline-block;font-family:var(--f-section);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px;}
+.mascot.bounce{animation:none;}
+.mascot.bounce::before{animation:mascotPopCloud .5s ease;}
 @keyframes mascotPop{0%{transform:scale(1)}35%{transform:scale(1.18)}60%{transform:scale(.95)}100%{transform:scale(1)}}
 @keyframes mascotPopCloud{0%{transform:translateY(-50%) scale(1)}35%{transform:translateY(-50%) scale(1.18)}60%{transform:translateY(-50%) scale(.95)}100%{transform:translateY(-50%) scale(1)}}
 .top-actions{display:flex;align-items:center;gap:6px;}
@@ -70,6 +73,8 @@ body{
 .date-nav .nav-arrow:hover{background:var(--card-soft);}
 .date-nav .date-pill{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:100%;background:none;border:none;box-shadow:none;border-radius:0;padding:0 6px;line-height:1;}
 .date-nav .date-pill:hover{background:var(--card-soft);}
+.date-nav,.date-nav .date-pill,.date-nav .nav-arrow{-webkit-tap-highlight-color:transparent;}
+.date-nav .date-pill:focus,.date-nav .date-pill:focus-visible,.date-nav .nav-arrow:focus,.date-nav .nav-arrow:focus-visible{outline:none;}
 .today-btn{background:var(--ink);color:var(--card);border:none;border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--f-body);}
 .hidden-date{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 .cal-pop{position:fixed;z-index:85;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 44px rgba(80,60,40,.18);padding:14px;width:280px;font-family:var(--f-body);}
@@ -364,7 +369,7 @@ body{
 .auth-err{color:var(--coral);font-size:12.5px;margin:-6px 0 12px;}
 .auth-err[hidden]{display:none;}
 .ask-btns{display:flex;gap:9px;justify-content:center;}
-.ask-btns .mini-btn{flex:1;text-align:center;padding:11px;}
+.ask-btns .mini-btn{flex:1;text-align:center;padding:11px;word-break:keep-all;line-height:1.35;}
 .modal .sub{color:var(--muted);font-size:13px;margin-bottom:18px;}
 .modal-close{float:right;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;}
 .week-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;}
@@ -384,7 +389,9 @@ body{
   body{padding:18px 12px 50px;}
   .title{font-size:31px;}
   .subtitle{font-size:13.5px;}
-  .mascot{width:46px;height:46px;font-size:30px;margin-top:2px;}
+  .mascot{margin-top:2px;padding-left:38px;}
+  .mascot::before{width:30px;height:30px;}
+  .mascot::after{font-size:14px;}
   .topbar{gap:5px;}
   .date-nav .date-pill{font-size:12.5px;padding:0 4px;}
   .report{padding:18px;}
@@ -773,7 +780,23 @@ body{
 .login-google:active{transform:translateY(0);}
 .login-google:disabled{opacity:.6;cursor:default;transform:none;}
 .login-google svg{width:18px;height:18px;flex-shrink:0;}
+.login-guest{
+  position:relative;display:block;width:100%;margin-top:10px;background:transparent;border:none;
+  font-family:var(--f-body);font-size:13.5px;font-weight:600;color:var(--ink-2);cursor:pointer;
+  padding:8px;border-radius:12px;transition:color .15s, background .15s;
+  background:var(--line);color:var(--ink);
+}
+.login-guest:hover{color:var(--ink);background:var(--line);}
+.login-guest .lg-default,.login-guest .lg-hover{transition:opacity .32s cubic-bezier(.4,0,.2,1), transform .32s cubic-bezier(.4,0,.2,1);}
+.login-guest .lg-default{display:inline-block;}
+.login-guest .lg-hover{position:absolute;left:0;right:0;top:50%;transform:translateY(calc(-50% + 5px));opacity:0;}
+.login-guest:hover .lg-default{opacity:0;transform:translateY(-5px);}
+.login-guest:hover .lg-hover{opacity:1;transform:translateY(-50%);}
+.login-guest .lg-arrow{display:inline-block;margin-left:5px;}
+.login-guest:hover .lg-arrow{animation:guestArrow 1s ease-in-out infinite;}
+@keyframes guestArrow{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
 .login-foot{margin-top:18px;font-family:var(--f-body);font-size:12.5px;color:var(--muted);line-height:1.6;}
+.login-foot-note{color:var(--coral);}
 </style>
 </head>
 <body>
@@ -784,15 +807,11 @@ body{
     <h1 class="login-title">enoughday</h1>
     <p class="login-sub">오늘 못한 일도 괜찮아요.<br>오늘의 핑계는 제가 챙겨드릴게요.</p>
     <button class="login-google" id="googleLoginBtn" type="button">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-      </svg>
-      Google로 계속하기
+      <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      <span>Google로 계속하기</span>
     </button>
-    <p class="login-foot">로그인하면 할 일이 기기 간에 안전하게 저장돼요 ☁️</p>
+    <button class="login-guest" id="guestBtn" type="button"><span class="lg-default">로그인 없이 둘러보기</span><span class="lg-hover">둘러보기는 저장이 안돼요. 그래도 계속하기<span class="lg-arrow">→</span></span></button>
+    <p class="login-foot">로그인하면 할 일이 기기 간에 안전하게 저장돼요</p>
   </div>
 </div>
 <div class="ambient" aria-hidden="true">
@@ -828,7 +847,7 @@ body{
 
   <header class="header">
     <h1 class="title"><span id="titleText">오늘은 여기까지</span><span class="dot">.</span></h1>
-    <p class="subtitle">할 일은 남았지만 괜찮아요,<br/>오늘의 핑계는 제가 챙겨드릴게요.</p>
+    <p class="subtitle">할 일은 남았지만 괜찮아요. <br/>오늘의 핑계는 제가 챙겨드릴게요.</p>
     <div class="header-cue">
       <div class="streak" id="streak" hidden></div>
       <span class="note-pill" id="notePill"></span>
@@ -2095,7 +2114,19 @@ window.__authChanged=(email)=>{
 $("#accountBtn").addEventListener("click",()=>{
   $("#menuModal").classList.remove("open");
   if(window.__loggedInEmail){ askConfirm({emoji:"☁️",title:"로그아웃할까요?",sub:window.__loggedInEmail,okLabel:"로그아웃",onOk:()=>{ window.__fb&&window.__fb.logout(); toast("로그아웃됐어요"); }}); }
-  else if(window.__fb){ window.__fb.loginGoogle().then(()=>toast("동기화 켜짐 ☁️")).catch(e=>toast(authErrMsg(e))); }
+  else if(window.__fb){ window.__fb.loginGoogle().then(()=>toast("동기화 켜짐 ☁️")).catch(e=>{
+    const c=(e&&e.code)||"";
+    if(c.includes("unauthorized-domain")){
+      askConfirm({
+        emoji:"☁️",
+        title:"로그인은 정식 주소에서만 가능해요",
+        sub:"지금은 둘러보기(체험) 중이에요. 로그인해서 사용하시려면 로그인 페이지로 돌아가 주세요.",
+        okLabel:"로그인 페이지로 돌아가기",
+        cancelLabel:"로그인 없이 계속 둘러보기",
+        onOk:()=>{ if(window.__showLogin) window.__showLogin(); }
+      });
+    } else { toast(authErrMsg(e)); }
+  }); }
   else toast("호스팅한 주소에서 로그인할 수 있어요 ☁️");
 });
 function authErrMsg(e){ const c=(e&&e.code)||""; if(c.includes("popup-closed")||c.includes("cancelled-popup"))return "로그인 창이 닫혔어요. 다시 시도해 주세요."; if(c.includes("popup-blocked"))return "팝업이 차단됐어요. 허용 후 다시 시도해 주세요."; if(c.includes("unauthorized-domain"))return "이 주소가 Firebase 승인 도메인에 없어요."; if(c.includes("network"))return "네트워크 오류예요. 연결을 확인해 주세요."; return "로그인에 문제가 생겼어요. 잠시 후 다시 시도해 주세요."; }
@@ -2144,16 +2175,23 @@ getShareDeco();
 (function(){
   var loginScreen=document.getElementById('loginScreen');
   var btn=document.getElementById('googleLoginBtn');
+  var guestBtn=document.getElementById('guestBtn');
   if(!loginScreen||!btn) return;
   function enterApp(){ loginScreen.classList.add('login-hidden'); }
   function showLogin(){ loginScreen.classList.remove('login-hidden'); }
+  window.__showLogin=showLogin;
+
+  /* 로그인 없이 둘러보기: 구글 인증을 건너뛰고 바로 입장 (localStorage 모드).
+     이후 Firebase auth가 null로 늦게 발화해도 로그인 화면으로 튕기지 않도록 플래그로 고정. */
+  var guestMode=false;
+  if(guestBtn){ guestBtn.addEventListener('click', function(){ guestMode=true; enterApp(); }); }
 
   /* 실제 Firebase 로그인 상태를 반영. firebaseConfig를 새 프로젝트로 바꿔도 그대로 동작.
      기존 계정 UI 핸들러(window.__authChanged)를 덮어쓰지 않고 이어서 호출. */
   var prevAuthChanged=window.__authChanged;
   window.__authChanged=function(email){
     if(typeof prevAuthChanged==="function") prevAuthChanged(email);
-    if(email) enterApp(); else showLogin();
+    if(email) enterApp(); else if(!guestMode) showLogin();
   };
 
   btn.addEventListener('click', async function(){
