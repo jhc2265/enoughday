@@ -5,9 +5,8 @@
 <br> 할 일을 다 못 했어도 괜찮아요. 
 <br> **오늘은 여기까지**는 못 한 일에 그럴듯한 핑계를 붙여주고, 구름 마스코트가 하루를 다정하게 마무리해 주는 to-do 웹앱입니다.
 
-<br> 🔗 **데모**
+<br> 🔗 
 - GitHub Pages: https://jhc2265.github.io/enoughday/
-- 깃허브 페이지는 로그인 없이 이용가능합니다! 그냥 구글로 계속하기 버튼을 눌러주세요.
 - Firebase Hosting: https://enoughday2265.web.app
 
 ---
