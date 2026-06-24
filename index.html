@@ -2134,11 +2134,11 @@ $("#accountBtn").addEventListener("click",()=>{
     if(c.includes("unauthorized-domain")){
       askConfirm({
         emoji:"☁️",
-        title:"로그인은 정식 주소에서만 가능해요",
-        sub:"지금은 둘러보기(체험) 중이에요. 로그인해서 사용하시려면 로그인 페이지로 돌아가 주세요.",
-        okLabel:"로그인 페이지로 돌아가기",
-        cancelLabel:"로그인 없이 계속 둘러보기",
-        onOk:()=>{ if(window.__showLogin) window.__showLogin(); }
+        title:"로그인은 정식 사이트에서 할 수 있어요",
+        sub:"지금은 GitHub 미리보기(체험) 중이에요. 로그인하고 기기 간 동기화를 쓰려면 정식 사이트로 이동해 주세요.",
+        okLabel:"정식 사이트로 가기",
+        cancelLabel:"계속 둘러보기",
+        onOk:()=>{ location.href="https://enoughday2265.web.app"; }
       });
     } else { toast(authErrMsg(e)); }
   }); }
