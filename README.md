@@ -7,6 +7,7 @@
 
 <br> 🔗 
 - GitHub Pages: https://jhc2265.github.io/enoughday/
+- 깃허브페이지에서는 실제 로그인 기능이 작동하진 않지만, 둘러보기를 할 수 있어요!
 - Firebase Hosting: https://enoughday2265.web.app
 
 ---
