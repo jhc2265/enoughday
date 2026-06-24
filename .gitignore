@@ -1,0 +1,9 @@
+# Firebase 배포 캐시 (로컬 전용)
+.firebase/
+
+# 로컬 도구/세션
+.claude/
+
+# OS
+Thumbs.db
+.DS_Store
