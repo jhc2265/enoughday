@@ -949,6 +949,11 @@ body.preview-mode .lg-wrap:hover .login-tip{opacity:1;transform:translateX(-50%)
         <span class="mi-tx"><b id="acctTitle">로그인 / 동기화</b><small id="acctSub">기기 간 백업·동기화</small></span>
         <span class="mi-ch">›</span>
       </button>
+      <button class="menu-item" id="deleteAccountBtn" style="display:none">
+        <span class="mi-ic"><img src="assets/ic_account.png" alt=""></span>
+        <span class="mi-tx"><b style="color:var(--coral)">회원 탈퇴</b><small>계정과 클라우드 데이터 삭제</small></span>
+        <span class="mi-ch">›</span>
+      </button>
 
       <div class="menu-sec">핑계</div>
       <label class="menu-row">
@@ -2125,6 +2130,7 @@ window.__authChanged=(email)=>{
   window.__loggedInEmail=email||null;
   const t=$("#acctTitle"), s=$("#acctSub");
   if(t&&s){ if(email){ t.textContent="동기화 켜짐 ☁️"; s.textContent=email; } else { t.textContent="로그인 / 동기화"; s.textContent="기기 간 백업·동기화"; } }
+  const del=$("#deleteAccountBtn"); if(del) del.style.display = email ? "flex" : "none";
 };
 $("#accountBtn").addEventListener("click",()=>{
   $("#menuModal").classList.remove("open");
@@ -2143,6 +2149,29 @@ $("#accountBtn").addEventListener("click",()=>{
     } else { toast(authErrMsg(e)); }
   }); }
   else toast("호스팅한 주소에서 로그인할 수 있어요 ☁️");
+});
+$("#deleteAccountBtn").addEventListener("click",()=>{
+  $("#menuModal").classList.remove("open");
+  if(!window.__loggedInEmail){ toast("로그인 후 이용할 수 있어요"); return; }
+  askConfirm({
+    emoji:"⚠️",
+    title:"정말 회원 탈퇴할까요?",
+    sub:"계정과 클라우드에 저장된 모든 할 일·기록이 영구 삭제돼요. 되돌릴 수 없어요.",
+    okLabel:"탈퇴하기",
+    cancelLabel:"취소",
+    onOk:()=>{
+      if(!(window.__fb && window.__fb.deleteAccount)){ toast("정식 사이트에서만 탈퇴할 수 있어요 ☁️"); return; }
+      toast("본인 확인 후 탈퇴를 진행해요…");
+      window.__fb.deleteAccount()
+        .then(()=>toast("회원 탈퇴가 완료됐어요. 그동안 고마웠어요 ☁️"))
+        .catch(e=>{
+          const c=(e&&e.code)||"";
+          if(c.includes("popup-closed")||c.includes("cancelled-popup")||c.includes("user-cancelled")) toast("탈퇴를 취소했어요");
+          else if(c.includes("popup-blocked")) toast("팝업이 차단됐어요. 허용 후 다시 시도해 주세요.");
+          else toast("탈퇴 중 문제가 생겼어요. 다시 시도해 주세요.");
+        });
+    }
+  });
 });
 function authErrMsg(e){ const c=(e&&e.code)||""; if(c.includes("popup-closed")||c.includes("cancelled-popup"))return "로그인 창이 닫혔어요. 다시 시도해 주세요."; if(c.includes("popup-blocked"))return "팝업이 차단됐어요. 허용 후 다시 시도해 주세요."; if(c.includes("unauthorized-domain"))return "이 주소가 Firebase 승인 도메인에 없어요."; if(c.includes("network"))return "네트워크 오류예요. 연결을 확인해 주세요."; return "로그인에 문제가 생겼어요. 잠시 후 다시 시도해 주세요."; }
 
@@ -2236,8 +2265,8 @@ getShareDeco();
 <!-- Firebase 로그인 / 클라우드 동기화 -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, reauthenticateWithPopup } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAkesw86B_wNdUzVSq277CwWzpI1aG3Dh4",
@@ -2254,7 +2283,15 @@ try{
   const auth=getAuth(app); const db=getFirestore(app);
   let curUser=null, unsub=null, lastJson=null, saveTimer=null;
   const ref=uid=>doc(db,"users",uid);
-  window.__fb={ loginGoogle:()=>signInWithPopup(auth, new GoogleAuthProvider()), logout:()=>signOut(auth) };
+  async function deleteAccount(){
+    let user=auth.currentUser;
+    if(!user) throw new Error('no-user');
+    await reauthenticateWithPopup(user, new GoogleAuthProvider());  // 본인 확인 (구글 재인증)
+    user=auth.currentUser;
+    try{ await deleteDoc(ref(user.uid)); }catch(e){ /* 클라우드 데이터가 없으면 무시 */ }
+    await user.delete();
+  }
+  window.__fb={ loginGoogle:()=>signInWithPopup(auth, new GoogleAuthProvider()), logout:()=>signOut(auth), deleteAccount };
   onAuthStateChanged(auth, async (user)=>{
     curUser=user; if(unsub){ unsub(); unsub=null; }
     if(window.__authChanged) window.__authChanged(user?user.email:null);
